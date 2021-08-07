@@ -1,2 +1,2 @@
 # Simple-AI
-Nha Trang University
+Trí Tuệ Nhân Tạo Đại học Nha Trang
