@@ -27,14 +27,28 @@ export default class Game extends Component {
         if (winner || squares[i]) {
             return;
         }
-        squares[i] = this.state.xIsNext ? 'X' : 'O';
+        squares[i] = 'X';
+        
+        let indexA = [];
+        current.squares.forEach(function(e, index) {
+            if(e === null){
+                indexA.push(index);
+            }
+
+        });
+        indexA = indexA.filter(e => e !== i);
+        
+        let AIMove = randomAIMove(indexA);
+
+        squares[AIMove] = 'O';
         this.setState({
             history: history.concat({
                 squares: squares
             }),
-            xIsNext: !this.state.xIsNext,
             stepNumber: history.length
         });
+
+
 
     }
 
@@ -57,7 +71,7 @@ export default class Game extends Component {
             status = 'Winner is ' + winner;
         }
         else {
-            status = 'Next Player is ' + (this.state.xIsNext ? 'X' : 'O');
+            status = 'Tied';
         }
 
 
@@ -76,6 +90,12 @@ export default class Game extends Component {
             </div>
         )
     }
+}
+
+function randomAIMove(indexA){
+    const randomPick = Math.floor(Math.random() * indexA.length);
+    return indexA[randomPick];
+
 }
 
 function calculateWinner(squares) {
