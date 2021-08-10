@@ -29,18 +29,42 @@ export default class Game extends Component {
         }
         squares[i] = 'X';
         
-        let indexA = [];
-        current.squares.forEach(function(e, index) {
-            if(e === null){
-                indexA.push(index);
-            }
+        // let indexA = [];
+        // current.squares.forEach(function(e, index) {
+        //     if(e === null){
+        //         indexA.push(index);
+        //     }
 
-        });
-        indexA = indexA.filter(e => e !== i);
+        // });
+
         
-        let AIMove = randomAIMove(indexA);
 
-        squares[AIMove] = 'O';
+        // indexA = indexA.filter(e => e !== i);
+
+
+        let tempo_board = squares;
+        tempo_board[i] = 'X';
+        let bestMove;
+        let bestScore = Infinity;
+        for(let e = 0; e<tempo_board.length; e++){
+            if(tempo_board[e] === null){
+                tempo_board[e] = 'O';
+
+                let score = AIMoveWithMinimax(tempo_board, 0 , false);
+                tempo_board[e] = null;
+                if(score < bestScore){
+                    bestScore = score;
+                    bestMove = e;
+                }
+            }
+            
+        }
+        
+
+        // let bestMove = randomAIMove(indexA);
+        
+
+        squares[bestMove] = 'O';
         this.setState({
             history: history.concat({
                 squares: squares
@@ -67,7 +91,10 @@ export default class Game extends Component {
             )
         });
         let status;
-        if (winner) {
+        if (winner === 'X') {
+            status = 'Winner is ' + winner;
+        }
+        else if(winner === 'O'){
             status = 'Winner is ' + winner;
         }
         else {
@@ -92,13 +119,54 @@ export default class Game extends Component {
     }
 }
 
+let scores = {
+    X: 1,
+    O: -1,
+    tied: 0
+}
+
+
 function randomAIMove(indexA){
     const randomPick = Math.floor(Math.random() * indexA.length);
     return indexA[randomPick];
 
 }
 
+function AIMoveWithMinimax(board, depth, isMaximizing){
+    let winner = calculateWinner(board);
+    if (winner !== null){
+        return scores[winner];
+    }
+
+    if(isMaximizing){
+        let bestScore = -Infinity;
+        for(let e = 0; e < board.length ; e++){
+            if (board[e] === null){
+                board[e] = 'O';
+                let score = AIMoveWithMinimax(board, depth + 1, false);
+                board[e] = null;
+                bestScore = Math.max(score, bestScore);
+            }
+        }
+        return bestScore;
+    }
+    else{
+        let bestScore = Infinity;
+        for(let e = 0; e < board.length ; e++){
+            if (board[e] === null){
+                board[e] = 'X';
+                let score = AIMoveWithMinimax(board, depth + 1, true);
+                board[e] = null;
+                bestScore = Math.min(score, bestScore);
+            }
+        }
+        return bestScore;
+    }
+    
+}
+
 function calculateWinner(squares) {
+    let winner = null;
     const lines = [
         [0, 1, 2],
         [3, 4, 5],
@@ -112,10 +180,21 @@ function calculateWinner(squares) {
 
     for (let i = 0; i < lines.length; i++) {
         const [a, b, c] = lines[i];
-        if (squares[a] && squares[a] === squares[b] && squares[b] === squares[c]) {
-            return squares[a];
+        if (squares[a] === squares[c] && squares[a] === squares[b] && squares[b] === squares[c]) {
+            winner = squares[a];
         }
     }
 
-    return null;
+    let openSpots = 0;
+    for (let i = 0; i < squares.length; i++) {
+      if (squares[i] == null) {
+        openSpots++;
+      }
+    }
+
+    if (winner == null && openSpots == 0) {
+        return 'tied';
+    } else {
+        return winner;
+    }
 }
