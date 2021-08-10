@@ -26,7 +26,6 @@ export default class Game extends Component {
         const current = history[history.length - 1];
         const squares = current.squares.slice();
         const winner = calculateWinner(squares);
-        console.log(squares);
         if (winner  || squares[i]) {
             return;
         }
@@ -54,35 +53,44 @@ export default class Game extends Component {
         for(let e = 0; e<tempo_board.length; e++){
             if(tempo_board[e] === null){
                 tempo_board[e] = 'O';
-
                 let score = AIMoveWithMinimax(tempo_board, 0 , false);
+                
                 tempo_board[e] = null;
                 if(score < bestScore){
+                    console.log('***********');
+                    console.log(score);
+                    console.log(e);
+                    console.log('***********');
                     bestScore = score;
                     bestMove = e;
                 }
             }
             
         }
-        squares[bestMove] = 'O';
+         /* Random BOT
         
+        let indexA = [];
+        current.squares.forEach(function(e, index) {
+            if(e === null){
+                indexA.push(index);
+            }
+
+        });
+
         
-        // let indexA = [];
-        // current.squares.forEach(function(e, index) {
-        //     if(e === null){
-        //         indexA.push(index);
-        //     }
 
-        // });
-
-        
-
-        // indexA = indexA.filter(e => e !== i);
+        indexA = indexA.filter(e => e !== i);
         
 
                 
 
-        // let bestMove = randomAIMove(indexA);
+        let bestMove = randomAIMove(indexA);
+
+        */
+        squares[bestMove] = 'O';
+
+        
+       
         
 
         
@@ -136,17 +144,17 @@ export default class Game extends Component {
 }
 
 let scores = {
-    X: 1,
-    O: -1,
-    tied: 0
+    'X': 1,
+    'O': -1,
+    'tied': 0
 }
 
 
-function randomAIMove(indexA){
-    const randomPick = Math.floor(Math.random() * indexA.length);
-    return indexA[randomPick];
+// function randomAIMove(indexA){
+//     const randomPick = Math.floor(Math.random() * indexA.length);
+//     return indexA[randomPick];
 
-}
+// }
 
 function AIMoveWithMinimax(board, depth, isMaximizing){
     let winner = calculateWinner(board);
@@ -208,7 +216,7 @@ function calculateWinner(squares) {
       }
     }
 
-    if (winner == null && openSpots == 0) {
+    if (winner === null && openSpots === 0) {
         return 'tied';
     } else {
         return winner;
