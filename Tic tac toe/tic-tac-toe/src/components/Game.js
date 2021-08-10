@@ -19,30 +19,35 @@ export default class Game extends Component {
         })
     }
 
+   
+
     handleClick(i) {
         const history = this.state.history.slice(0, this.state.stepNumber + 1);
         const current = history[history.length - 1];
         const squares = current.squares.slice();
         const winner = calculateWinner(squares);
-        if (winner || squares[i]) {
+        console.log(squares);
+        if (winner  || squares[i]) {
             return;
         }
+       
         squares[i] = 'X';
-        
-        // let indexA = [];
-        // current.squares.forEach(function(e, index) {
-        //     if(e === null){
-        //         indexA.push(index);
-        //     }
-
-        // });
 
         
-
-        // indexA = indexA.filter(e => e !== i);
-
 
         let tempo_board = squares;
+
+        this.setState({
+            history: history.concat({
+                squares: squares
+            }),
+            stepNumber: history.length
+        });
+
+        if (calculateWinner(tempo_board)){
+            return;
+        }
+
         tempo_board[i] = 'X';
         let bestMove;
         let bestScore = Infinity;
@@ -59,22 +64,33 @@ export default class Game extends Component {
             }
             
         }
+        squares[bestMove] = 'O';
         
+        
+        // let indexA = [];
+        // current.squares.forEach(function(e, index) {
+        //     if(e === null){
+        //         indexA.push(index);
+        //     }
+
+        // });
+
+        
+
+        // indexA = indexA.filter(e => e !== i);
+        
+
+                
 
         // let bestMove = randomAIMove(indexA);
         
 
-        squares[bestMove] = 'O';
-        this.setState({
-            history: history.concat({
-                squares: squares
-            }),
-            stepNumber: history.length
-        });
-
-
-
+        
+        
+       
     }
+
+
 
     render() {
         const history = this.state.history;
@@ -101,12 +117,12 @@ export default class Game extends Component {
             status = 'Tied';
         }
 
-
+        
 
         return (
             <div className="Game">
                 <div className="game-board">
-                    <Board onClick={(i) => this.handleClick(i)}
+                    <Board onClick={(i) => { this.handleClick(i);}}
                         squares={current.squares} />
                 </div>
                 <div className="game-info">
@@ -180,7 +196,7 @@ function calculateWinner(squares) {
 
     for (let i = 0; i < lines.length; i++) {
         const [a, b, c] = lines[i];
-        if (squares[a] === squares[c] && squares[a] === squares[b] && squares[b] === squares[c]) {
+        if (squares[a] && squares[a] === squares[b] && squares[b] === squares[c]) {
             winner = squares[a];
         }
     }
