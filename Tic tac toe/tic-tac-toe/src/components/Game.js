@@ -8,7 +8,7 @@ export default class Game extends Component {
             xIsNext: true,
             stepNumber: 0,
             history: [
-                { squares: Array(9).fill(null) }
+                { squares: !this.xIsNext ?  Array(9).fill(null) :  [null,null,null,null,"O",null,null,null,null]} 
             ]
         }
     }
@@ -16,6 +16,15 @@ export default class Game extends Component {
         this.setState({
             stepNumber: step,
             xIsNext: (step%2)===0
+        })
+    }
+
+    OIsNext(){
+        this.setState({
+            xIsNext: !this.state.xIsNext,
+            history: [
+                {squares: !this.state.xIsNext ?  Array(9).fill(null) :  [null,null,null,null,"O",null,null,null,null]}
+            ]  
         })
     }
 
@@ -53,14 +62,11 @@ export default class Game extends Component {
         for(let e = 0; e<tempo_board.length; e++){
             if(tempo_board[e] === null){
                 tempo_board[e] = 'O';
-                let score = AIMoveWithMinimax(tempo_board, 0 , false);
-                
+                let score = AIMoveWithMinimax(tempo_board, 0 , true);
+
                 tempo_board[e] = null;
+               
                 if(score < bestScore){
-                    console.log('***********');
-                    console.log(score);
-                    console.log(e);
-                    console.log('***********');
                     bestScore = score;
                     bestMove = e;
                 }
@@ -89,12 +95,7 @@ export default class Game extends Component {
         */
         squares[bestMove] = 'O';
 
-        
-       
-        
 
-        
-        
        
     }
 
@@ -124,8 +125,13 @@ export default class Game extends Component {
         else {
             status = 'Tied';
         }
+        let button;
+        if(!current.squares.includes("X")) {
+            button =  <button onClick={() => this.OIsNext()}>Swap</button>;
+        }
 
-        
+
+       
 
         return (
             <div className="Game">
@@ -134,6 +140,9 @@ export default class Game extends Component {
                         squares={current.squares} />
                 </div>
                 <div className="game-info">
+                    <div className="swap">
+                        {button}
+                    </div>
                     <div>{status}</div>
                     <ul>{moves}</ul>
                 </div>
@@ -143,10 +152,11 @@ export default class Game extends Component {
     }
 }
 
+
 let scores = {
-    'X': 1,
-    'O': -1,
-    'tied': 0
+    X: 1,
+    O: -1,
+    tied: 0
 }
 
 
@@ -164,11 +174,11 @@ function AIMoveWithMinimax(board, depth, isMaximizing){
 
     if(isMaximizing){
         let bestScore = -Infinity;
-        for(let e = 0; e < board.length ; e++){
-            if (board[e] === null){
-                board[e] = 'O';
+        for(let i = 0; i < board.length ; i++){
+            if (board[i] === null){
+                board[i] = 'X';
                 let score = AIMoveWithMinimax(board, depth + 1, false);
-                board[e] = null;
+                board[i] = null;
                 bestScore = Math.max(score, bestScore);
             }
         }
@@ -176,11 +186,11 @@ function AIMoveWithMinimax(board, depth, isMaximizing){
     }
     else{
         let bestScore = Infinity;
-        for(let e = 0; e < board.length ; e++){
-            if (board[e] === null){
-                board[e] = 'X';
+        for(let i = 0; i < board.length ; i++){
+            if (board[i] === null){
+                board[i] = 'O';
                 let score = AIMoveWithMinimax(board, depth + 1, true);
-                board[e] = null;
+                board[i] = null;
                 bestScore = Math.min(score, bestScore);
             }
         }
